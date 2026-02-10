@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wielermanager 2026</title>
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@33.1.1/dist/ag-grid-community.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+    }
+
+    :root {
+      --bg: #fff;
+      --fg: #111;
+      --fg-muted: #777;
+      --fg-subtle: #aaa;
+      --border: #e0e0e0;
+      --header-bg: #fafafa;
+      --row-odd: #fafafa;
+      --row-hover: #f5f5f5;
+      --input-bg: #fff;
+      --input-border: #ccc;
+      --spark-line: #999;
+      --spark-dot: #111;
+    }
+
+    [data-theme="dark"] {
+      --bg: #111;
+      --fg: #ddd;
+      --fg-muted: #777;
+      --fg-subtle: #555;
+      --border: #222;
+      --header-bg: #181818;
+      --row-odd: #151515;
+      --row-hover: #1c1c1c;
+      --input-bg: #1a1a1a;
+      --input-border: #333;
+      --spark-line: #555;
+      --spark-dot: #ccc;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+    }
+
+    /* --- Top bar --- */
+    #top {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #top-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    #top h1 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    #top .subtitle {
+      font-size: 12px;
+      color: var(--fg-muted);
+      margin-bottom: 10px;
+    }
+
+    #top .tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    #top .tag {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      background: var(--row-odd);
+      border: 1px solid var(--border);
+      color: var(--fg-muted);
+    }
+
+    #filters {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    #filters input,
+    #filters select {
+      font-family: inherit;
+      font-size: 12px;
+      padding: 6px 10px;
+      border: 1px solid var(--input-border);
+      border-radius: 4px;
+      background: var(--input-bg);
+      color: var(--fg);
+      outline: none;
+    }
+
+    #filters input:focus,
+    #filters select:focus {
+      border-color: var(--fg-muted);
+    }
+
+    #filters input {
+      width: 220px;
+    }
+
+    #filters select {
+      width: 260px;
+    }
+
+    #filters .count {
+      font-size: 11px;
+      color: var(--fg-subtle);
+      margin-left: auto;
+    }
+
+    #theme-toggle {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--fg-muted);
+      font-family: inherit;
+      font-size: 11px;
+      padding: 3px 8px;
+      cursor: pointer;
+      border-radius: 3px;
+      margin-left: auto;
+    }
+
+    #theme-toggle:hover {
+      color: var(--fg);
+    }
+
+    /* --- Grid --- */
+    #grid-wrapper {
+      height: calc(100vh - 170px);
+      width: 100%;
+    }
+
+    .ag-theme-alpine {
+      --ag-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --ag-font-size: 12px;
+      --ag-background-color: var(--bg);
+      --ag-header-background-color: var(--header-bg);
+      --ag-odd-row-background-color: var(--row-odd);
+      --ag-row-hover-color: var(--row-hover);
+      --ag-border-color: var(--border);
+      --ag-header-foreground-color: var(--fg-muted);
+      --ag-foreground-color: var(--fg);
+      --ag-row-border-color: var(--border);
+      --ag-range-selection-border-color: var(--fg);
+    }
+
+    .ag-theme-alpine .ag-header-cell {
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .ag-theme-alpine .ag-header-group-cell {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .pcs-link {
+      color: var(--fg-subtle);
+      text-decoration: none;
+      font-size: 11px;
+    }
+
+    .pcs-link:hover {
+      color: var(--fg);
+    }
+
+    /* --- Footer --- */
+    #footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px 20px;
+      font-size: 12px;
+      color: var(--fg-subtle);
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      text-align: right;
+    }
+
+    #footer a {
+      color: var(--fg-muted);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    #footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="top">
+    <div id="top-row">
+      <h1>Wielermanager 2026</h1>
+      <span style="font-size:11px;color:var(--fg-subtle)" id="updated"></span>
+      <button id="theme-toggle" onclick="toggleTheme()">dark</button>
+    </div>
+    <p class="subtitle">937 riders · Spring classics Feb 28 – Apr 26 · Click headers to sort</p>
+    <div class="tags">
+      <span class="tag">Wielermanager Prices</span>
+      <span class="tag">UCI World Ranking</span>
+      <span class="tag">PCS seasonal 2023–2026</span>
+      <span class="tag">Wielermanager points 2021–2025</span>
+      <span class="tag">Value ratios (pts/M)</span>
+    </div>
+    <div id="filters">
+      <input type="text" id="search" placeholder="Search rider...">
+      <select id="team-filter">
+        <option value="">All teams</option>
+      </select>
+      <span class="count" id="row-count"></span>
+    </div>
+  </div>
+
+  <div id="grid-wrapper" class="ag-theme-alpine"></div>
+
+  <div id="footer">
+    made with ❤️ by <a href="https://www.linkedin.com/in/pieter-jan-vaernewijck-631a3143/"
+      target="_blank">Pieter-Jan</a>
+    & <a href="https://claude.ai" target="_blank">Claude</a>
+  </div>
+
+  <script>
+    function numFmt(p) { return p.value == null ? '' : p.value.toLocaleString(); }
+    function priceFmt(p) { return p.value == null ? '' : p.value + 'M'; }
+
+    function nameFmt(p) {
+      const url = p.data.url;
+      if (url) return p.value + ' <a href="' + url + '" target="_blank" class="pcs-link" title="Open on PCS">↗</a>';
+      return p.value;
+    }
+
+    function sparkline(params) {
+      const vals = params.value;
+      if (!vals || vals.every(v => v === 0)) return '';
+      const max = Math.max(...vals);
+      if (max === 0) return '';
+      const w = 60, h = 20, pad = 2;
+      const n = vals.length;
+      const step = (w - pad * 2) / (n - 1);
+      const scale = (h - pad * 2) / max;
+      let pts = vals.map((v, i) => {
+        const x = pad + i * step;
+        const y = h - pad - v * scale;
+        return x.toFixed(1) + ',' + y.toFixed(1);
+      }).join(' ');
+      const lastX = (pad + (n - 1) * step).toFixed(1);
+      const lastY = (h - pad - vals[n - 1] * scale).toFixed(1);
+      const sl = getComputedStyle(document.documentElement).getPropertyValue('--spark-line').trim();
+      const sd = getComputedStyle(document.documentElement).getPropertyValue('--spark-dot').trim();
+      return '<svg width="' + w + '" height="' + h + '" style="vertical-align:middle">'
+        + '<polyline points="' + pts + '" fill="none" stroke="' + sl + '" stroke-width="1.5" stroke-linejoin="round"/>'
+        + '<circle cx="' + lastX + '" cy="' + lastY + '" r="2" fill="' + sd + '"/>'
+        + '</svg>';
+    }
+
+    const columnDefs = [
+      {
+        headerName: '',
+        children: [
+          { field: 'name', headerName: 'Rider', pinned: 'left', width: 190, cellRenderer: nameFmt },
+          { field: 'team', headerName: 'Team', pinned: 'left', width: 250 },
+          { field: 'price', headerName: 'Price', pinned: 'left', width: 100, valueFormatter: priceFmt, sort: 'desc' },
+        ]
+      },
+      {
+        headerName: 'UCI',
+        headerTooltip: 'UCI World Ranking (current)',
+        children: [
+          { field: 'uci_rank', headerName: 'Rank', width: 80, headerTooltip: 'UCI World Ranking position' },
+          { field: 'uci_pts', headerName: 'Pts', width: 80, valueFormatter: numFmt, headerTooltip: 'UCI ranking points' },
+          { field: 'uci_per_m', headerName: 'Pts/M', width: 80, headerTooltip: 'UCI points per million price' },
+        ]
+      },
+      {
+        headerName: 'PCS Season',
+        headerTooltip: 'ProCyclingStats seasonal ranking points',
+        children: [
+          { field: 'pcs_23', headerName: "'23", width: 70, valueFormatter: numFmt, headerTooltip: 'PCS 2023 seasonal points' },
+          { field: 'pcs_24', headerName: "'24", width: 70, valueFormatter: numFmt, headerTooltip: 'PCS 2024 seasonal points' },
+          { field: 'pcs_25', headerName: "'25", width: 70, valueFormatter: numFmt, headerTooltip: 'PCS 2025 seasonal points' },
+          { field: 'pcs_26', headerName: "'26", width: 70, valueFormatter: numFmt, headerTooltip: 'PCS 2026 seasonal points (partial)' },
+          { field: 'pcs_recent_per_m', headerName: 'Pts/M', width: 80, headerTooltip: '(PCS 2025 + 2026) per million price' },
+          { field: 'pcs_spark', headerName: '', width: 80, cellRenderer: sparkline, sortable: false },
+        ]
+      },
+      {
+        headerName: 'Wielermanager Points',
+        headerTooltip: 'Historical Sporza Wielermanager game points',
+        children: [
+          { field: 'wm_21', headerName: "'21", width: 60, valueFormatter: numFmt },
+          { field: 'wm_22', headerName: "'22", width: 60, valueFormatter: numFmt },
+          { field: 'wm_23', headerName: "'23", width: 60, valueFormatter: numFmt },
+          { field: 'wm_24', headerName: "'24", width: 60, valueFormatter: numFmt },
+          { field: 'wm_25', headerName: "'25", width: 60, valueFormatter: numFmt },
+          { field: 'wm_total', headerName: 'Total', width: 70, valueFormatter: numFmt, headerTooltip: 'Total WM points 2021-2025' },
+          { field: 'wm_spark', headerName: '', width: 100, cellRenderer: sparkline, sortable: false },
+        ]
+      },
+      {
+        headerName: 'Value',
+        headerTooltip: 'Points per million price (higher = better value)',
+        children: [
+          { field: 'wm_per_m', headerName: 'WM/M', width: 75, headerTooltip: 'Total WM points (5yr) per million' },
+          { field: 'wm_25_per_m', headerName: "'25/M", width: 75, headerTooltip: '2025 WM points per million' },
+          { field: 'wm_weighted', headerName: 'Wtd', width: 75, headerTooltip: 'Weighted: 50%×2025 + 30%×2024 + 20%×2023' },
+        ]
+      },
+    ];
+
+    // --- Theme ---
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? '' : 'dark');
+      document.getElementById('theme-toggle').textContent = isDark ? 'dark' : 'light';
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.getElementById('theme-toggle').textContent = 'light';
+    }
+
+    // --- Load data & init grid ---
+    let gridApi;
+    let selectedTeam = '';
+
+    fetch('data/riders.json')
+      .then(r => r.json())
+      .then(data => {
+        const rowData = data.riders;
+        document.getElementById('updated').textContent = data.updated ? 'updated ' + data.updated : '';
+        // Populate team dropdown
+        const teams = [...new Set(rowData.map(r => r.team).filter(Boolean))].sort();
+        const sel = document.getElementById('team-filter');
+        teams.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = t;
+          opt.textContent = t;
+          sel.appendChild(opt);
+        });
+
+        const gridOptions = {
+          columnDefs,
+          rowData,
+          defaultColDef: { sortable: true, resizable: true },
+          rowSelection: 'multiple',
+          isExternalFilterPresent: () => selectedTeam !== '',
+          doesExternalFilterPass: (node) => node.data.team === selectedTeam,
+          onModelUpdated: (p) => {
+            document.getElementById('row-count').textContent =
+              p.api.getDisplayedRowCount() + ' / ' + rowData.length + ' riders';
+          },
+        };
+
+        gridApi = agGrid.createGrid(document.getElementById('grid-wrapper'), gridOptions);
+
+        // Search
+        document.getElementById('search').addEventListener('input', (e) => {
+          gridApi.setGridOption('quickFilterText', e.target.value);
+        });
+
+        // Team filter
+        document.getElementById('team-filter').addEventListener('change', (e) => {
+          selectedTeam = e.target.value;
+          gridApi.onFilterChanged();
+        });
+      });
+  </script>
+</body>
+
+</html>
