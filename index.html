@@ -354,7 +354,7 @@
     let gridApi;
     let selectedTeam = '';
 
-    fetch('data/riders.json')
+    fetch('riders.json')
       .then(r => r.json())
       .then(data => {
         const rowData = data.riders;
